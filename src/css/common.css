@@ -10,9 +10,20 @@ body {
   background-color: #fafafa;
   color: #212121;
   line-height: 1.5;
+  margin: 0;
 }
 
 img {
   display: block;
   max-width: 100%;
+}
+
+.gallery {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.photo-card {
+  flex-basis: calc((100% - 30px) / 3);
 }
