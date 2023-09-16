@@ -1,62 +1,84 @@
-import { getPhotosBySearch } from './js/PixabayAPI';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
-
-getPhotosBySearch('dog')
-  .then(photos => console.log(photos))
-  .catch(error => console.log(error));
+import { createGallery } from './js/render';
+import { PixabayAPI } from './js/PixabayAPI';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+import {
+  successRequest,
+  badRequest,
+  needSearchQuery,
+  endListOfPictures,
+} from './js/notify';
 
 const refs = {
   searchForm: document.querySelector('.search-form'),
   submitBtn: document.querySelector('.search-button'),
   galleryList: document.querySelector('.gallery'),
+  loadMoreBtn: document.querySelector('.load-more'),
 };
 
 refs.searchForm.addEventListener('submit', onSearchByQuery);
 
-function onSearchByQuery(e) {
+const pixabay = new PixabayAPI();
+
+let options = {
+  root: null,
+  rootMargin: '1500px',
+  threshold: 0,
+};
+
+let observer = new IntersectionObserver(handleIntersect, options);
+
+const gallery = new SimpleLightbox('.gallery__link', {
+  captionsData: 'alt',
+  captionPosition: 'bottom',
+  captionDelay: 250,
+  showCounter: false,
+});
+
+async function onSearchByQuery(e) {
   e.preventDefault();
-  const searchQueryValue = e.target.elements.searchQuery.value;
-  getPhotosBySearch(searchQueryValue).then(res => {
-    const photosArray = res.hits;
+  pixabay.query = e.target.elements.searchQuery.value.trim();
+  pixabay.page = 1;
+  pixabay.picturesOnPage = 0;
+  refs.galleryList.innerHTML = '';
+  observer.unobserve(refs.loadMoreBtn);
+  if (!pixabay.query) {
+    return needSearchQuery();
+  }
+  const response = await pixabay.getPhotosBySearch();
+  if (response) {
+    const photosArray = response.hits;
+    pixabay.picturesOnPage += response.hits.length;
     if (photosArray.length === 0) {
-      return Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.',
-        {
-          cssAnimationStyle: 'zoom',
-          closeButton: true,
-          position: 'center-top',
-        }
-      );
+      return badRequest();
     }
-    Notify.success(`Hooray! We found ${res.totalHits} images.`, {
-      cssAnimationStyle: 'zoom',
-      position: 'center-top',
-    });
-    const markup = photosArray
-      .map(
-        hit => `<div class="photo-card">
-      <img src="${hit.webformatURL}" alt="${hit.tags}" loading="lazy" />
-      <div class="info">
-        <p class="info-item">
-          <b>Likes</b>
-          ${hit.likes}
-        </p>
-        <p class="info-item">
-          <b>Views</b>
-          ${hit.views}
-        </p>
-        <p class="info-item">
-          <b>Comments</b>
-          ${hit.comments}
-        </p>
-        <p class="info-item">
-          <b>Downloads</b>
-          ${hit.downloads}
-        </p>
-      </div>
-    </div>`
-      )
-      .join('');
-    refs.galleryList.innerHTML = markup;
+    successRequest(response.totalHits);
+    createGallery(photosArray, refs.galleryList);
+    observer.observe(refs.loadMoreBtn);
+  }
+  gallery.refresh();
+}
+
+function handleIntersect(entries, observer) {
+  entries.forEach(async entry => {
+    if (entry.isIntersecting) {
+      const response = await pixabay.getPhotosBySearch();
+      pixabay.picturesOnPage += response.hits.length;
+      if (response.totalHits <= pixabay.picturesOnPage) {
+        observer.unobserve(refs.loadMoreBtn);
+        return endListOfPictures();
+      }
+      const photosArray = response.hits;
+      createGallery(photosArray, refs.galleryList);
+      gallery.refresh();
+      const { height: cardHeight } = document
+        .querySelector('.gallery')
+        .firstElementChild.getBoundingClientRect();
+
+      window.scrollBy({
+        top: cardHeight * 2,
+        behavior: 'smooth',
+      });
+    }
   });
 }
