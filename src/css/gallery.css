@@ -25,11 +25,7 @@ body {
 }
 
 .gallery {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
   padding: 20px;
-  justify-content: center;
 }
 
 .gallery img {
@@ -41,7 +37,7 @@ body {
 }
 
 .photo-card {
-  flex-basis: calc((100% - 30px) / 3);
+  max-width: 360px;
   height: 400px;
   overflow: hidden;
   display: inline-block;
@@ -83,4 +79,17 @@ body {
 
 .photo-card:hover {
   cursor: pointer;
+}
+
+@media screen and (min-width: 1200px) {
+  .gallery {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .photo-card {
+    flex-basis: calc((100% - 30px) / 3);
+  }
 }
