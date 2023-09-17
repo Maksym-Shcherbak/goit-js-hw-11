@@ -70,10 +70,6 @@ function handleIntersect(entries, observer) {
       console.log(pixabay.picturesOnPage);
       const response = await pixabay.getPhotosBySearch();
       pixabay.picturesOnPage += response.hits.length;
-      if (response.totalHits <= pixabay.picturesOnPage) {
-        observer.unobserve(refs.loadMoreBtn);
-        return endListOfPictures();
-      }
       const photosArray = response.hits;
       createGallery(photosArray, refs.galleryList);
       const { height: cardHeight } = document
@@ -85,6 +81,10 @@ function handleIntersect(entries, observer) {
         behavior: 'smooth',
       });
       gallery.refresh();
+      if (response.totalHits <= pixabay.picturesOnPage) {
+        observer.unobserve(refs.loadMoreBtn);
+        return endListOfPictures();
+      }
     }
   });
 }
