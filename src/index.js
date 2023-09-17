@@ -63,12 +63,12 @@ async function onSearchByQuery(e) {
 function handleIntersect(entries, observer) {
   entries.forEach(async entry => {
     if (entry.isIntersecting) {
-      const response = await pixabay.getPhotosBySearch();
-      pixabay.picturesOnPage += response.hits.length;
       if (response.totalHits <= pixabay.picturesOnPage) {
         observer.unobserve(refs.loadMoreBtn);
         return endListOfPictures();
       }
+      const response = await pixabay.getPhotosBySearch();
+      pixabay.picturesOnPage += response.hits.length;
       const photosArray = response.hits;
       createGallery(photosArray, refs.galleryList);
       const { height: cardHeight } = document
