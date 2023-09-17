@@ -12,7 +12,6 @@ export const badRequest = () => {
     'Sorry, there are no images matching your search query. Please try again.',
     {
       cssAnimationStyle: 'zoom',
-      closeButton: true,
       position: 'center-top',
     }
   );

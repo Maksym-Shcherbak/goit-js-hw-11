@@ -14,6 +14,7 @@ const refs = {
   submitBtn: document.querySelector('.search-button'),
   galleryList: document.querySelector('.gallery'),
   loadMoreBtn: document.querySelector('.load-more'),
+  backToTop: document.querySelector('.back-to-top'),
 };
 
 refs.searchForm.addEventListener('submit', onSearchByQuery);
@@ -22,7 +23,7 @@ const pixabay = new PixabayAPI();
 
 let options = {
   root: null,
-  rootMargin: '1500px',
+  rootMargin: '300px',
   threshold: 0,
 };
 
@@ -70,15 +71,35 @@ function handleIntersect(entries, observer) {
       }
       const photosArray = response.hits;
       createGallery(photosArray, refs.galleryList);
-      gallery.refresh();
       const { height: cardHeight } = document
         .querySelector('.gallery')
         .firstElementChild.getBoundingClientRect();
-
+      console.log(cardHeight);
       window.scrollBy({
         top: cardHeight * 2,
         behavior: 'smooth',
       });
+      gallery.refresh();
     }
   });
 }
+
+// Add a scroll event listener to the window
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 800) {
+    // Add the "show-back-to-top" class
+    refs.backToTop.classList.add('show-back-to-top');
+  } else {
+    // Remove the "show-back-to-top" class
+    refs.backToTop.classList.remove('show-back-to-top');
+  }
+});
+
+refs.backToTop.addEventListener('click', e => {
+  e.preventDefault();
+
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth',
+  });
+});
