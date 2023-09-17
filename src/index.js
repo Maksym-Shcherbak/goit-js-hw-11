@@ -55,6 +55,10 @@ async function onSearchByQuery(e) {
     }
     successRequest(response.totalHits);
     createGallery(photosArray, refs.galleryList);
+    if (response.totalHits <= pixabay.picturesOnPage) {
+      observer.unobserve(refs.loadMoreBtn);
+      return endListOfPictures();
+    }
     observer.observe(refs.loadMoreBtn);
   }
   gallery.refresh();
@@ -63,12 +67,13 @@ async function onSearchByQuery(e) {
 function handleIntersect(entries, observer) {
   entries.forEach(async entry => {
     if (entry.isIntersecting) {
+      console.log(pixabay.picturesOnPage);
+      const response = await pixabay.getPhotosBySearch();
+      pixabay.picturesOnPage += response.hits.length;
       if (response.totalHits <= pixabay.picturesOnPage) {
         observer.unobserve(refs.loadMoreBtn);
         return endListOfPictures();
       }
-      const response = await pixabay.getPhotosBySearch();
-      pixabay.picturesOnPage += response.hits.length;
       const photosArray = response.hits;
       createGallery(photosArray, refs.galleryList);
       const { height: cardHeight } = document
