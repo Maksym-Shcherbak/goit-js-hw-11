@@ -39,10 +39,9 @@ body {
 .photo-card {
   max-width: 360px;
   height: 300px;
-  overflow: hidden;
-  display: inline-block;
+  display: block;
+  margin-bottom: 10px;
   color: white;
-  position: relative;
   background-color: white;
 }
 
@@ -72,9 +71,20 @@ body {
     justify-content: center;
   }
 
+  .gallery img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform: scale(1);
+    transition: transform 0.4s ease;
+  }
+
   .photo-card {
     flex-basis: calc((100% - 30px) / 3);
     height: 350px;
+    margin-bottom: 0;
+    overflow: hidden;
+    position: relative;
   }
 
   .info {
