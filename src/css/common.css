@@ -1,4 +1,9 @@
 @import '/node_modules/modern-normalize/modern-normalize.css';
+.container {
+  padding: 0 15px;
+  margin: 0 auto;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
