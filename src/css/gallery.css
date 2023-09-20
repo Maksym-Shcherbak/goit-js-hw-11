@@ -63,7 +63,7 @@ body {
   background-color: rgba(0, 0, 0, 1);
 }
 
-@media screen and (min-width: 1200px) {
+@media screen and (min-width: 768px) {
   .gallery {
     display: flex;
     gap: 15px;
@@ -80,9 +80,16 @@ body {
   }
 
   .photo-card {
+    flex-basis: calc((100% - 15px) / 2);
+    height: 300px;
+    margin-bottom: 0;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .photo-card {
     flex-basis: calc((100% - 30px) / 3);
     height: 350px;
-    margin-bottom: 0;
     overflow: hidden;
     position: relative;
   }
