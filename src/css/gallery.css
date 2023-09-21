@@ -87,6 +87,10 @@ body {
 }
 
 @media screen and (min-width: 1200px) {
+  .gallery img {
+    height: 100%;
+  }
+
   .photo-card {
     flex-basis: calc((100% - 30px) / 3);
     height: 350px;
