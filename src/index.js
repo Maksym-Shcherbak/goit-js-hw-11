@@ -108,6 +108,3 @@ refs.backToTop.addEventListener('click', e => {
     behavior: 'smooth',
   });
 });
-
-let a = new Array(256).join(' ');
-console.log(`this${a}is`);
